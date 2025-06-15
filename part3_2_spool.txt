@@ -1,0 +1,215 @@
+[mkim1211@sit ~]$ OracleXML getXML -user "grp4/heregrp4" \
+-conn "jdbc:oracle:thin:@sit.itec.yorku.ca:1521/studb10g" \
+-rowsetTag "NPO_EVENTS" \
+-rowTag "NPO" \
+"select trim(e.enpoid.npoid) as "npo_id", e.ecoid.pname.get_fullname() as "coordinator", count(e.eid) as "number_of_events"
+from event e
+group by trim(e.enpoid.npoid), e.ecoid.pname.get_fullname()
+order by trim(e.enpoid.npoid)"
+<?xml version = '1.0'?>
+<NPO_EVENTS>
+   <NPO num="1">
+      <NPO_ID>N001</NPO_ID>
+      <COORDINATOR>John M Doe</COORDINATOR>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+   <NPO num="2">
+      <NPO_ID>N002</NPO_ID>
+      <COORDINATOR>Jane L Smith</COORDINATOR>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+   <NPO num="3">
+      <NPO_ID>N003</NPO_ID>
+      <COORDINATOR>Alice S Johnson</COORDINATOR>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+   <NPO num="4">
+      <NPO_ID>N004</NPO_ID>
+      <COORDINATOR>John M Doe</COORDINATOR>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+</NPO_EVENTS>
+
+[mkim1211@sit ~]$ OracleXML getXML -user "grp4/heregrp4" \
+-conn "jdbc:oracle:thin:@sit.itec.yorku.ca:1521/studb10g" \
+-rowsetTag "VOLUNTEER_HOURS" \
+-rowTag "VOLUNTEER" \
+"select trim(va.eoid.enpoid.npoid) as "npo_id", va.eoid.ename as "event_name", va.vloid.pname.get_fullname() as "volunteer_name", sum(va.vhours) as "total_hours"
+from volunteerassignment va
+group by trim(va.eoid.enpoid.npoid), va.eoid.ename, va.vloid.pname.get_fullname()
+order by trim(va.eoid.enpoid.npoid)"
+<?xml version = '1.0'?>
+<VOLUNTEER_HOURS>
+   <VOLUNTEER num="1">
+      <NPO_ID>N001</NPO_ID>
+      <EVENT_NAME>SickKids Fun Day</EVENT_NAME>
+      <VOLUNTEER_NAME>Emma L Wilson</VOLUNTEER_NAME>
+      <TOTAL_HOURS>12.5</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="2">
+      <NPO_ID>N001</NPO_ID>
+      <EVENT_NAME>SickKids Fun Day</EVENT_NAME>
+      <VOLUNTEER_NAME>Michael M Davis</VOLUNTEER_NAME>
+      <TOTAL_HOURS>8</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="3">
+      <NPO_ID>N001</NPO_ID>
+      <EVENT_NAME>SickKids Fun Day</EVENT_NAME>
+      <VOLUNTEER_NAME>Olivia B Taylor</VOLUNTEER_NAME>
+      <TOTAL_HOURS>9</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="4">
+      <NPO_ID>N002</NPO_ID>
+      <EVENT_NAME>PAWS Adoption Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>Michael M Davis</VOLUNTEER_NAME>
+      <TOTAL_HOURS>10.25</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="5">
+      <NPO_ID>N002</NPO_ID>
+      <EVENT_NAME>PAWS Adoption Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>Olivia B Taylor</VOLUNTEER_NAME>
+      <TOTAL_HOURS>7.5</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="6">
+      <NPO_ID>N002</NPO_ID>
+      <EVENT_NAME>PAWS Adoption Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>Sophia A Clark</VOLUNTEER_NAME>
+      <TOTAL_HOURS>10.5</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="7">
+      <NPO_ID>N002</NPO_ID>
+      <EVENT_NAME>PAWS Adoption Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>William T Harris</VOLUNTEER_NAME>
+      <TOTAL_HOURS>6.75</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="8">
+      <NPO_ID>N003</NPO_ID>
+      <EVENT_NAME>Habitat Build-A-Home</EVENT_NAME>
+      <VOLUNTEER_NAME>William T Harris</VOLUNTEER_NAME>
+      <TOTAL_HOURS>13.25</TOTAL_HOURS>
+   </VOLUNTEER>
+   <VOLUNTEER num="9">
+      <NPO_ID>N004</NPO_ID>
+      <EVENT_NAME>Safety Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>Michael M Davis</VOLUNTEER_NAME>
+      <TOTAL_HOURS>15.75</TOTAL_HOURS>
+   </VOLUNTEER>
+</VOLUNTEER_HOURS>
+
+[mkim1211@sit ~]$ OracleXML getXML -user "grp4/heregrp4" \
+-conn "jdbc:oracle:thin:@sit.itec.yorku.ca:1521/studb10g" \
+-rowsetTag "FEEDBACK_RATING" \
+-rowTag "VOLUNTEER" \
+"select trim(va.eoid.enpoid.npoid) as "npo_id", va.eoid.ename as "event_name", va.vloid.pname.get_fullname() as "volunteer_name", va.toid.tname as "task_name",
+va.feedbackrating as "feedback_rating"
+from volunteerassignment va
+where va.feedbackrating = (select max(va2.feedbackrating) from volunteerassignment va2 where va2.eoid.eid = va.eoid.eid)
+order by trim(va.eoid.enpoid.npoid)"
+<?xml version = '1.0'?>
+<FEEDBACK_RATING>
+   <VOLUNTEER num="1">
+      <NPO_ID>N001</NPO_ID>
+      <EVENT_NAME>SickKids Fun Day</EVENT_NAME>
+      <VOLUNTEER_NAME>Emma L Wilson</VOLUNTEER_NAME>
+      <TASK_NAME>Patient Companion</TASK_NAME>
+      <FEEDBACK_RATING>4.5</FEEDBACK_RATING>
+   </VOLUNTEER>
+   <VOLUNTEER num="2">
+      <NPO_ID>N002</NPO_ID>
+      <EVENT_NAME>PAWS Adoption Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>William T Harris</VOLUNTEER_NAME>
+      <TASK_NAME>Event Setup</TASK_NAME>
+      <FEEDBACK_RATING>4.6</FEEDBACK_RATING>
+   </VOLUNTEER>
+   <VOLUNTEER num="3">
+      <NPO_ID>N003</NPO_ID>
+      <EVENT_NAME>Habitat Build-A-Home</EVENT_NAME>
+      <VOLUNTEER_NAME>William T Harris</VOLUNTEER_NAME>
+      <TASK_NAME>Furniture Moving</TASK_NAME>
+      <FEEDBACK_RATING>4</FEEDBACK_RATING>
+   </VOLUNTEER>
+   <VOLUNTEER num="4">
+      <NPO_ID>N004</NPO_ID>
+      <EVENT_NAME>Safety Fair</EVENT_NAME>
+      <VOLUNTEER_NAME>Michael M Davis</VOLUNTEER_NAME>
+      <TASK_NAME>Emergency Supply Kits</TASK_NAME>
+      <FEEDBACK_RATING>4.8</FEEDBACK_RATING>
+   </VOLUNTEER>
+</FEEDBACK_RATING>
+
+[mkim1211@sit ~]$ OracleXML getXML -user "grp4/heregrp4" \
+-conn "jdbc:oracle:thin:@sit.itec.yorku.ca:1521/studb10g" \
+-rowsetTag "TOP_VOLUNTEERS" \
+-rowTag "VOLUNTEER" \
+"select trim(va.eoid.enpoid.npoid) as "npo_id", va.vloid.pname.get_fullname() as "volunteer_name", va.vhours as "total_hours", va.eoid.ename as "event_name"
+from volunteerassignment va
+where va.vhours = (select max(va2.vhours) from volunteerassignment va2 where va2.eoid.eid = va.eoid.eid)
+order by trim(va.eoid.enpoid.npoid)"
+<?xml version = '1.0'?>
+<TOP_VOLUNTEERS>
+   <VOLUNTEER num="1">
+      <NPO_ID>N001</NPO_ID>
+      <VOLUNTEER_NAME>Emma L Wilson</VOLUNTEER_NAME>
+      <TOTAL_HOURS>12.5</TOTAL_HOURS>
+      <EVENT_NAME>SickKids Fun Day</EVENT_NAME>
+   </VOLUNTEER>
+   <VOLUNTEER num="2">
+      <NPO_ID>N002</NPO_ID>
+      <VOLUNTEER_NAME>Sophia A Clark</VOLUNTEER_NAME>
+      <TOTAL_HOURS>10.5</TOTAL_HOURS>
+      <EVENT_NAME>PAWS Adoption Fair</EVENT_NAME>
+   </VOLUNTEER>
+   <VOLUNTEER num="3">
+      <NPO_ID>N003</NPO_ID>
+      <VOLUNTEER_NAME>William T Harris</VOLUNTEER_NAME>
+      <TOTAL_HOURS>13.25</TOTAL_HOURS>
+      <EVENT_NAME>Habitat Build-A-Home</EVENT_NAME>
+   </VOLUNTEER>
+   <VOLUNTEER num="4">
+      <NPO_ID>N004</NPO_ID>
+      <VOLUNTEER_NAME>Michael M Davis</VOLUNTEER_NAME>
+      <TOTAL_HOURS>15.75</TOTAL_HOURS>
+      <EVENT_NAME>Safety Fair</EVENT_NAME>
+   </VOLUNTEER>
+</TOP_VOLUNTEERS>
+
+[mkim1211@sit ~]$ OracleXML getXML -user "grp4/heregrp4" \
+-conn "jdbc:oracle:thin:@sit.itec.yorku.ca:1521/studb10g" \
+-rowsetTag "NPO_INFO" \
+-rowTag "NPO" \
+"select trim(e.enpoid.npoid) as "npo_id", e.enpoid.nponame as "npo_name", e.enpoid.npoemail as "npo_email", e.enpoid.npophn as "npo_phone", count(e.eid) as "number_of_events"
+from event e
+group by trim(e.enpoid.npoid), e.enpoid.nponame, e.enpoid.npoemail, e.enpoid.npophn"
+<?xml version = '1.0'?>
+<NPO_INFO>
+   <NPO num="1">
+      <NPO_ID>N001</NPO_ID>
+      <NPO_NAME>SickKids_Foundation</NPO_NAME>
+      <NPO_EMAIL>info@sickkidsfoundation.com</NPO_EMAIL>
+      <NPO_PHONE>4168131500</NPO_PHONE>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+   <NPO num="2">
+      <NPO_ID>N002</NPO_ID>
+      <NPO_NAME>PAWS</NPO_NAME>
+      <NPO_EMAIL>info@paws.org</NPO_EMAIL>
+      <NPO_PHONE>4162940088</NPO_PHONE>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+   <NPO num="3">
+      <NPO_ID>N004</NPO_ID>
+      <NPO_NAME>Canadian_Red_Cross</NPO_NAME>
+      <NPO_EMAIL>wecare@redcross.ca</NPO_EMAIL>
+      <NPO_PHONE>9054181111</NPO_PHONE>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+   <NPO num="4">
+      <NPO_ID>N003</NPO_ID>
+      <NPO_NAME>Habitat_for_Humanity</NPO_NAME>
+      <NPO_EMAIL>info@habitat.ca</NPO_EMAIL>
+      <NPO_PHONE>4164224828</NPO_PHONE>
+      <NUMBER_OF_EVENTS>1</NUMBER_OF_EVENTS>
+   </NPO>
+</NPO_INFO>
+
+

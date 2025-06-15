@@ -1,0 +1,217 @@
+select xmlroot(xmlelement("npos",
+  2  xmlagg(xmlelement("npo", xmlattributes(trim(e.enpoid.npoid) as "id"),
+xmlagg(xmlelement("event", xmlattributes(trim(e.eid) as "id"), xmlforest(e.ename as "event_name",
+  4  e.estatus as "status", e.edesc as "description", e.requiredvolunteers as "required_volunteers",
+e.ecoid.pname.get_fullname() as "coordinator_name")))))), version '1.0') as npo_events
+  6  from event e
+  7  group by e.enpoid.npoid;
+
+NPO_EVENTS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<npos>
+  <npo id="N001">
+    <event id="EVT001">
+      <event_name>SickKids Fun Day</event_name>
+      <status>Planned</status>
+      <description>A day dedicated to providing fun and engaging activities for children at SickKids Hospital.</description>
+      <required_volunteers>3</required_volunteers>
+      <coordinator_name>John M Doe</coordinator_name>
+    </event>
+  </npo>
+  <npo id="N002">
+    <event id="EVT002">
+      <event_name>PAWS Adoption Fair</event_name>
+      <status>Completed</status>
+      <description>An event to promote pet adoption and educate the community about pet welfare.</description>
+      <required_volunteers>4</required_volunteers>
+      <coordinator_name>Jane L Smith</coordinator_name>
+    </event>
+  </npo>
+  <npo id="N003">
+    <event id="EVT003">
+      <event_name>Habitat Build-A-Home</event_name>
+      <status>Planned</status>
+      <description>A construction event where volunteers work together to build a home for a family in need.</description>
+      <required_volunteers>2</required_volunteers>
+      <coordinator_name>Alice S Johnson</coordinator_name>
+    </event>
+  </npo>
+  <npo id="N004">
+    <event id="EVT004">
+      <event_name>Safety Fair</event_name>
+      <status>Planned</status>
+      <description>A community event focused on disaster preparedness and safety.</description>
+      <required_volunteers>1</required_volunteers>
+      <coordinator_name>John M Doe</coordinator_name>
+    </event>
+  </npo>
+</npos>
+
+
+select xmlroot(xmlelement("npos",
+xmlagg(xmlelement("event", xmlattributes(trim(va.eoid.enpoid.npoid) as "npo_id", trim(va.eoid.eid) as "event_id"),
+xmlforest(va.eoid.ename as "event_name", va.eoid.ecoid.pname.get_fullname() as "coordinator_name", round(avg(va.feedbackrating),2) as "average_feedback_rating"))
+order by trim(va.eoid.enpoid.npoid))), version '1.0') as average_ratings
+  5  from volunteerassignment va
+  6  group by va.eoid.enpoid.npoid, va.eoid.eid, va.eoid.ename, va.eoid.ecoid.pname.get_fullname();
+
+AVERAGE_RATINGS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<npos>
+  <event npo_id="N001" event_id="EVT001">
+    <event_name>SickKids Fun Day</event_name>
+    <coordinator_name>John M Doe</coordinator_name>
+    <average_feedback_rating>4.17</average_feedback_rating>
+  </event>
+  <event npo_id="N002" event_id="EVT002">
+    <event_name>PAWS Adoption Fair</event_name>
+    <coordinator_name>Jane L Smith</coordinator_name>
+    <average_feedback_rating>4.14</average_feedback_rating>
+  </event>
+  <event npo_id="N003" event_id="EVT003">
+    <event_name>Habitat Build-A-Home</event_name>
+    <coordinator_name>Alice S Johnson</coordinator_name>
+    <average_feedback_rating>4</average_feedback_rating>
+  </event>
+  <event npo_id="N004" event_id="EVT004">
+    <event_name>Safety Fair</event_name>
+    <coordinator_name>John M Doe</coordinator_name>
+    <average_feedback_rating>4.8</average_feedback_rating>
+  </event>
+</npos>
+
+
+select xmlroot(xmlelement("npos",
+xmlagg(xmlelement("event", xmlattributes(trim(va.eoid.enpoid.npoid) as "npo_id", trim(va.eoid.eid) as "event_id"),
+xmlforest(va.eoid.ename as "event_name", va.vloid.pname.get_fullname() as "volunteer_name", trim(va.toid.tid) as "task_name", va.feedbackrating as "feedback_rating", va.feedbackcomment as "feedback_comment"))
+order by trim(va.eoid.eid))),version '1.0') as lowest_rating
+  5  from volunteerassignment va
+  6  where va.feedbackrating = (select min(va2.feedbackrating) from volunteerassignment va2 where va2.eoid.eid = va.eoid.eid);
+
+LOWEST_RATING
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<npos>
+  <event npo_id="N001" event_id="EVT001">
+    <event_name>SickKids Fun Day</event_name>
+    <volunteer_name>Michael M Davis</volunteer_name>
+    <task_name>TSK007</task_name>
+    <feedback_rating>3.75</feedback_rating>
+    <feedback_comment>Good work!</feedback_comment>
+  </event>
+  <event npo_id="N002" event_id="EVT002">
+    <event_name>PAWS Adoption Fair</event_name>
+    <volunteer_name>Olivia B Taylor</volunteer_name>
+    <task_name>TSK002</task_name>
+    <feedback_rating>3.75</feedback_rating>
+    <feedback_comment>Good work!</feedback_comment>
+  </event>
+  <event npo_id="N003" event_id="EVT003">
+    <event_name>Habitat Build-A-Home</event_name>
+    <volunteer_name>William T Harris</volunteer_name>
+    <task_name>TSK008</task_name>
+    <feedback_rating>4</feedback_rating>
+    <feedback_comment>Well done!</feedback_comment>
+  </event>
+  <event npo_id="N004" event_id="EVT004">
+    <event_name>Safety Fair</event_name>
+    <volunteer_name>Michael M Davis</volunteer_name>
+    <task_name>TSK005</task_name>
+    <feedback_rating>4.8</feedback_rating>
+    <feedback_comment>Excellent performance!</feedback_comment>
+  </event>
+</npos>
+
+
+select xmlroot(xmlelement("npos",
+xmlagg(xmlelement("npo", xmlattributes(trim(e.enpoid.npoid) as "id"),
+xmlforest(e.ecoid.pname.get_fullname() as "coordinator_name", e.ecoid.ccoid.certificatename as "certificate_name", e.ecoid.ccoid.certificatenumber as "certificate_number")))),
+  4  version '1.0') as coordinator_certifications
+  5  from event e;
+
+COORDINATOR_CERTIFICATIONS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<npos>
+  <npo id="N001">
+    <coordinator_name>John M Doe</coordinator_name>
+    <certificate_name>Safety Certificate</certificate_name>
+    <certificate_number>SC-12345</certificate_number>
+  </npo>
+  <npo id="N002">
+    <coordinator_name>Jane L Smith</coordinator_name>
+    <certificate_name>Quality Assurance</certificate_name>
+    <certificate_number>QA-67890</certificate_number>
+  </npo>
+  <npo id="N003">
+    <coordinator_name>Alice S Johnson</coordinator_name>
+    <certificate_name>Environmental Permit</certificate_name>
+    <certificate_number>EP-23456</certificate_number>
+  </npo>
+  <npo id="N004">
+    <coordinator_name>John M Doe</coordinator_name>
+    <certificate_name>Safety Certificate</certificate_name>
+    <certificate_number>SC-12345</certificate_number>
+  </npo>
+</npos>
+
+
+select xmlroot(xmlelement("npos",
+xmlagg(xmlelement("npo", xmlattributes(trim(va.eoid.enpoid.npoid) as "id"),
+xmlagg(xmlelement("volunteer", xmlforest(va.vloid.pname.get_fullname() as "volunteer_name", va.toid.tname as "task_name"))
+order by va.vloid.pname.get_fullname())))),
+  5  version '1.0') as volunteer_tasks
+  6  from volunteerassignment va
+  7  group by va.eoid.enpoid.npoid;
+
+VOLUNTEER_TASKS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<npos>
+  <npo id="N001">
+    <volunteer>
+      <volunteer_name>Emma L Wilson</volunteer_name>
+      <task_name>Patient Companion</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <task_name>Gift Assembly</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <task_name>Storytime Volunteer</task_name>
+    </volunteer>
+  </npo>
+  <npo id="N002">
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <task_name>Pet Enclosures</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <task_name>Activity Assistance</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Sophia A Clark</volunteer_name>
+      <task_name>Pet Walker</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>William T Harris</volunteer_name>
+      <task_name>Event Setup</task_name>
+    </volunteer>
+  </npo>
+  <npo id="N003">
+    <volunteer>
+      <volunteer_name>William T Harris</volunteer_name>
+      <task_name>Furniture Moving</task_name>
+    </volunteer>
+  </npo>
+  <npo id="N004">
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <task_name>Emergency Supply Kits</task_name>
+    </volunteer>
+  </npo>
+</npos>

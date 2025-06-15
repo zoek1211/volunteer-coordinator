@@ -1,0 +1,536 @@
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(trim(va.eoid.ecoid.cid) as "id"),
+xmlagg(xmlelement("volunteer_information", xmlforest(va.vloid.pname.get_fullname                                                                                                                                                                                                          () as "volunteer_name", va.vloid.email as "volunteer_email", va.eoid.ename as "e                                                                                                                                                                                                          vent_name"))
+order by va.eoid.ename)))), version '1.0') as volunteer_information
+  5  from volunteerassignment va
+  6  group by va.eoid.ecoid.cid;
+
+VOLUNTEER_INFORMATION
+--------------------------------------------------------------------------------                                                                                                                                                                                                          --------------------------------------------------------------------------------                                                                                                                                                                                                          --------------------------------------------------------------------------------                                                                                                                                                                                                          --------------------------------------------------------------------------------                                                                                                                                                                                                          --------------------------------------------------------------------------------                                                                                                                                                                                                          --------------------------------------------------------------------------------                                                                                                                                                                                                          --------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator id="C001">
+    <volunteer_information>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <volunteer_email>davis@gmail.com</volunteer_email>
+      <event_name>Safety Fair</event_name>
+    </volunteer_information>
+    <volunteer_information>
+      <volunteer_name>Emma L Wilson</volunteer_name>
+      <volunteer_email>wilson@gmail.com</volunteer_email>
+      <event_name>SickKids Fun Day</event_name>
+    </volunteer_information>
+    <volunteer_information>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <volunteer_email>taylor@gmail.com</volunteer_email>
+      <event_name>SickKids Fun Day</event_name>
+    </volunteer_information>
+    <volunteer_information>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <volunteer_email>davis@gmail.com</volunteer_email>
+      <event_name>SickKids Fun Day</event_name>
+    </volunteer_information>
+  </coordinator>
+  <coordinator id="C002">
+    <volunteer_information>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <volunteer_email>davis@gmail.com</volunteer_email>
+      <event_name>PAWS Adoption Fair</event_name>
+    </volunteer_information>
+    <volunteer_information>
+      <volunteer_name>Sophia A Clark</volunteer_name>
+      <volunteer_email>clark@gmail.com</volunteer_email>
+      <event_name>PAWS Adoption Fair</event_name>
+    </volunteer_information>
+    <volunteer_information>
+      <volunteer_name>William T Harris</volunteer_name>
+      <volunteer_email>harris@gmail.com</volunteer_email>
+      <event_name>PAWS Adoption Fair</event_name>
+    </volunteer_information>
+    <volunteer_information>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <volunteer_email>taylor@gmail.com</volunteer_email>
+      <event_name>PAWS Adoption Fair</event_name>
+    </volunteer_information>
+  </coordinator>
+  <coordinator id="C003">
+    <volunteer_information>
+      <volunteer_name>William T Harris</volunteer_name>
+      <volunteer_email>harris@gmail.com</volunteer_email>
+      <event_name>Habitat Build-A-Home</event_name>
+    </volunteer_information>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(va.eoid.ecoid.pname.get_fullname() as "coordinator_name", va.eoid.ename as "event_name"),
+xmlagg(xmlforest(va.vloid.pname.get_fullname() as "volunteer_name", va.toid.tname as "task_name"))))), version '1.0') as volunteer_task
+  4  from volunteerassignment va
+  5  group by va.eoid.ecoid.pname.get_fullname(), va.eoid.ename;
+
+VOLUNTEER_TASK
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator coordinator_name="John M Doe" event_name="Safety Fair">
+    <volunteer_name>Michael M Davis</volunteer_name>
+    <task_name>Emergency Supply Kits</task_name>
+  </coordinator>
+  <coordinator coordinator_name="John M Doe" event_name="SickKids Fun Day">
+    <volunteer_name>Emma L Wilson</volunteer_name>
+    <task_name>Patient Companion</task_name>
+    <volunteer_name>Olivia B Taylor</volunteer_name>
+    <task_name>Storytime Volunteer</task_name>
+    <volunteer_name>Michael M Davis</volunteer_name>
+    <task_name>Gift Assembly</task_name>
+  </coordinator>
+  <coordinator coordinator_name="Jane L Smith" event_name="PAWS Adoption Fair">
+    <volunteer_name>Michael M Davis</volunteer_name>
+    <task_name>Pet Enclosures</task_name>
+    <volunteer_name>Sophia A Clark</volunteer_name>
+    <task_name>Pet Walker</task_name>
+    <volunteer_name>William T Harris</volunteer_name>
+    <task_name>Event Setup</task_name>
+    <volunteer_name>Olivia B Taylor</volunteer_name>
+    <task_name>Activity Assistance</task_name>
+  </coordinator>
+  <coordinator coordinator_name="Alice S Johnson" event_name="Habitat Build-A-Home">
+    <volunteer_name>William T Harris</volunteer_name>
+    <task_name>Furniture Moving</task_name>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+  2  xmlagg(xmlelement("coordinator", xmlattributes(trim(e.ecoid.cid) as "id"),
+  3  xmlforest(e.ecoid.pname.get_fullname() as "coordinator_name", e.ecoid.dob as "date_of_birth", e.ecoid.address as "address", e.ecoid.phn as "phone_number", e.ecoid.email as "email",
+  4  e.ecoid.ccoid.certificatename as "certification"),
+xmlelement("events", xmlagg(xmlelement("event", e.ename)))))),
+  6  version '1.0') as coordinator_details
+  7  from event e
+  8  group by e.ecoid.cid, e.ecoid.pname.get_fullname(), e.ecoid.dob, e.ecoid.address, e.ecoid.phn, e.ecoid.email, e.ecoid.ccoid.certificatename
+  9  order by e.ecoid.cid;
+
+COORDINATOR_DETAILS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator id="C001">
+    <coordinator_name>John M Doe</coordinator_name>
+    <date_of_birth>1990-05-15</date_of_birth>
+    <address>123 Street</address>
+    <phone_number>4165551234</phone_number>
+    <email>doe@gmail.com</email>
+    <certification>Safety Certificate</certification>
+    <events>
+      <event>SickKids Fun Day</event>
+      <event>Safety Fair</event>
+    </events>
+  </coordinator>
+  <coordinator id="C002">
+    <coordinator_name>Jane L Smith</coordinator_name>
+    <date_of_birth>1985-07-20</date_of_birth>
+    <address>456 Avenue</address>
+    <phone_number>9055555678</phone_number>
+    <email>smith@gmail.com</email>
+    <certification>Quality Assurance</certification>
+    <events>
+      <event>PAWS Adoption Fair</event>
+    </events>
+  </coordinator>
+  <coordinator id="C003">
+    <coordinator_name>Alice S Johnson</coordinator_name>
+    <date_of_birth>2000-01-25</date_of_birth>
+    <address>789 Road</address>
+    <phone_number>6135557890</phone_number>
+    <email>johnson@gmail.com</email>
+    <certification>Environmental Permit</certification>
+    <events>
+      <event>Habitat Build-A-Home</event>
+    </events>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(va.eoid.ecoid.pname.get_fullname() as "name"),
+xmlagg(xmlelement("volunteers", (xmlforest(va.vloid.pname.get_fullname() as "volunteer_name", va.feedbackrating as "feedback_rating", va.feedbackcomment as "feedback_comment"))))))),
+  4  version '1.0') as volunteer_feedback
+  5  from volunteerassignment va
+  6  group by va.eoid.ecoid.pname.get_fullname()
+  7  order by va.eoid.ecoid.pname.get_fullname();
+
+VOLUNTEER_FEEDBACK
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator name="Alice S Johnson">
+    <volunteers>
+      <volunteer_name>William T Harris</volunteer_name>
+      <feedback_rating>4</feedback_rating>
+      <feedback_comment>Well done!</feedback_comment>
+    </volunteers>
+  </coordinator>
+  <coordinator name="Jane L Smith">
+    <volunteers>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <feedback_rating>4</feedback_rating>
+      <feedback_comment>Well done!</feedback_comment>
+    </volunteers>
+    <volunteers>
+      <volunteer_name>Sophia A Clark</volunteer_name>
+      <feedback_rating>4.2</feedback_rating>
+      <feedback_comment>Nice effort!</feedback_comment>
+    </volunteers>
+    <volunteers>
+      <volunteer_name>William T Harris</volunteer_name>
+      <feedback_rating>4.6</feedback_rating>
+      <feedback_comment>Great work!</feedback_comment>
+    </volunteers>
+    <volunteers>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <feedback_rating>3.75</feedback_rating>
+      <feedback_comment>Good work!</feedback_comment>
+    </volunteers>
+  </coordinator>
+  <coordinator name="John M Doe">
+    <volunteers>
+      <volunteer_name>Emma L Wilson</volunteer_name>
+      <feedback_rating>4.5</feedback_rating>
+      <feedback_comment>Great effort!</feedback_comment>
+    </volunteers>
+    <volunteers>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <feedback_rating>4.25</feedback_rating>
+      <feedback_comment>Good Job!</feedback_comment>
+    </volunteers>
+    <volunteers>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <feedback_rating>4.8</feedback_rating>
+      <feedback_comment>Excellent performance!</feedback_comment>
+    </volunteers>
+    <volunteers>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <feedback_rating>3.75</feedback_rating>
+      <feedback_comment>Good work!</feedback_comment>
+    </volunteers>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(trim(e.ecoid.cid) as "id", e.ecoid.pname.get_fullname() as "coordinator_name"),
+xmlagg(xmlelement("event", xmlforest(e.ename as "event_name", e.edatetime as "event_date")))))),
+  4  version '1.0') as upcoming_events
+  5  from event e
+where TRUNC(e.edatetime) > TRUNC(SYSDATE)
+  7  group by e.ecoid.cid, e.ecoid.pname.get_fullname()
+  8  order by e.ecoid.cid;
+
+UPCOMING_EVENTS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator id="C001" coordinator_name="John M Doe">
+    <event>
+      <event_name>SickKids Fun Day</event_name>
+      <event_date>2025-03-29T10:30:00.000000</event_date>
+    </event>
+    <event>
+      <event_name>Safety Fair</event_name>
+      <event_date>2025-04-23T12:30:00.000003</event_date>
+    </event>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+  2  xmlagg(xmlelement("coordinator", xmlattributes(event_data.coordinator_name as "coordinator_name"),
+xmlelement("events", xmlagg(xmlelement("event", xmlforest(event_data.event_name as "event_name", event_data.required_volunteers as "required_volunteers", event_data.actual_volunteers as "actual_volunteers"))))))),
+  4  version '1.0') as volunteer_count
+  5  from (select DISTINCT va.eoid.ecoid.pname.get_fullname() as coordinator_name, va.eoid.ename as event_name, va.eoid.requiredvolunteers as required_volunteers, va.get_number_of_volunteers() as actual_volunteers
+from volunteerassignment va) event_data
+  7  group by event_data.coordinator_name
+  8  order by event_data.coordinator_name;
+
+VOLUNTEER_COUNT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator coordinator_name="Alice S Johnson">
+    <events>
+      <event>
+        <event_name>Habitat Build-A-Home</event_name>
+        <required_volunteers>2</required_volunteers>
+        <actual_volunteers>1</actual_volunteers>
+      </event>
+    </events>
+  </coordinator>
+  <coordinator coordinator_name="Jane L Smith">
+    <events>
+      <event>
+        <event_name>PAWS Adoption Fair</event_name>
+        <required_volunteers>4</required_volunteers>
+        <actual_volunteers>4</actual_volunteers>
+      </event>
+    </events>
+  </coordinator>
+  <coordinator coordinator_name="John M Doe">
+    <events>
+      <event>
+        <event_name>Safety Fair</event_name>
+        <required_volunteers>1</required_volunteers>
+        <actual_volunteers>1</actual_volunteers>
+      </event>
+      <event>
+        <event_name>SickKids Fun Day</event_name>
+        <required_volunteers>3</required_volunteers>
+        <actual_volunteers>3</actual_volunteers>
+      </event>
+    </events>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(trim(e.ecoid.cid) as "id"),
+xmlagg(xmlelement("event", xmlforest(e.ename as "event_name", e.enpoid.nponame as "npo_name", e.enpoid.npoemail as "npo_email", e.enpoid.npophn as "npo_phone")))))),
+  4  version '1.0') as assigned_npos
+  5  from event e
+  6  group by e.ecoid.cid;
+
+ASSIGNED_NPOS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator id="C001">
+    <event>
+      <event_name>SickKids Fun Day</event_name>
+      <npo_name>SickKids_Foundation</npo_name>
+      <npo_email>info@sickkidsfoundation.com</npo_email>
+      <npo_phone>4168131500</npo_phone>
+    </event>
+    <event>
+      <event_name>Safety Fair</event_name>
+      <npo_name>Canadian_Red_Cross</npo_name>
+      <npo_email>wecare@redcross.ca</npo_email>
+      <npo_phone>9054181111</npo_phone>
+    </event>
+  </coordinator>
+  <coordinator id="C002">
+    <event>
+      <event_name>PAWS Adoption Fair</event_name>
+      <npo_name>PAWS</npo_name>
+      <npo_email>info@paws.org</npo_email>
+      <npo_phone>4162940088</npo_phone>
+    </event>
+  </coordinator>
+  <coordinator id="C003">
+    <event>
+      <event_name>Habitat Build-A-Home</event_name>
+      <npo_name>Habitat_for_Humanity</npo_name>
+      <npo_email>info@habitat.ca</npo_email>
+      <npo_phone>4164224828</npo_phone>
+    </event>
+  </coordinator>
+</coordinators>
+
+xmlagg(xmlelement("coordinator", xmlattributes(trim(va.eoid.ecoid.cid) as "id", va.eoid.ecoid.pname.get_fullname() as "coordinator_name"),
+xmlforest(va.eoid.ename as "event_name", sum(va.vhours) as "total_hours")) order by va.eoid.ecoid.cid)),
+version '1.0') as volunteer_hours
+from volunteerassignment va
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(trim(va.eoid.ecoid.cid) as "id", va.eoid.ecoid.pname.get_fullname() as "coordinator_name"),
+xmlforest(va.eoid.ename as "event_name", sum(va.vhours) as "total_hours")) order by va.eoid.ecoid.cid)),
+  4  version '1.0') as volunteer_hours
+  5  from volunteerassignment va
+  6  group by va.eoid.ecoid.cid, va.eoid.ecoid.pname.get_fullname(), va.eoid.ename;
+
+VOLUNTEER_HOURS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator id="C001" coordinator_name="John M Doe">
+    <event_name>SickKids Fun Day</event_name>
+    <total_hours>29.5</total_hours>
+  </coordinator>
+  <coordinator id="C001" coordinator_name="John M Doe">
+    <event_name>Safety Fair</event_name>
+    <total_hours>15.75</total_hours>
+  </coordinator>
+  <coordinator id="C002" coordinator_name="Jane L Smith">
+    <event_name>PAWS Adoption Fair</event_name>
+    <total_hours>35</total_hours>
+  </coordinator>
+  <coordinator id="C003" coordinator_name="Alice S Johnson">
+    <event_name>Habitat Build-A-Home</event_name>
+    <total_hours>13.25</total_hours>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(va.eoid.ecoid.pname.get_fullname() as "coordinator_name", va.eoid.ename as "event_name"),
+xmlagg(xmlelement("volunteer", xmlforest(va.vloid.pname.get_fullname() as "volunteer_name", va.vloid.get_train_hours() as "training_hours", va.toid.tname as "task_name")))))),
+  4  version '1.0') as volunteer_training
+  5  from volunteerassignment va
+  6  group by va.eoid.ecoid.pname.get_fullname(), va.eoid.ename
+  7  order by va.eoid.ecoid.pname.get_fullname(), va.eoid.ename;
+
+VOLUNTEER_TRAINING
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator coordinator_name="John M Doe" event_name="Safety Fair">
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <training_hours>28</training_hours>
+      <task_name>Emergency Supply Kits</task_name>
+    </volunteer>
+  </coordinator>
+  <coordinator coordinator_name="John M Doe" event_name="SickKids Fun Day">
+    <volunteer>
+      <volunteer_name>Emma L Wilson</volunteer_name>
+      <training_hours>9</training_hours>
+      <task_name>Patient Companion</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <training_hours>8</training_hours>
+      <task_name>Storytime Volunteer</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <training_hours>28</training_hours>
+      <task_name>Gift Assembly</task_name>
+    </volunteer>
+  </coordinator>
+  <coordinator coordinator_name="Jane L Smith" event_name="PAWS Adoption Fair">
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <training_hours>28</training_hours>
+      <task_name>Pet Enclosures</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Sophia A Clark</volunteer_name>
+      <training_hours>15</training_hours>
+      <task_name>Pet Walker</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>William T Harris</volunteer_name>
+      <training_hours>13</training_hours>
+      <task_name>Event Setup</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <training_hours>8</training_hours>
+      <task_name>Activity Assistance</task_name>
+    </volunteer>
+  </coordinator>
+  <coordinator coordinator_name="Alice S Johnson" event_name="Habitat Build-A-Home">
+    <volunteer>
+      <volunteer_name>William T Harris</volunteer_name>
+      <training_hours>13</training_hours>
+      <task_name>Furniture Moving</task_name>
+    </volunteer>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+  2  xmlagg(xmlelement("coordinator", xmlattributes(name as "name"),
+xmlagg(xmlelement("npo", xmlforest(npo_name as "npo_name", number_of_events as "number_of_events")))))),
+  4  version '1.0') as assigned_events
+from (select distinct va.eoid.ecoid.pname.get_fullname() as name, va.eoid.enpoid.nponame as npo_name, va.eoid.ecoid.get_number_of_events() as number_of_events
+  6  from volunteerassignment va) coordinator_npo_pairs
+  7  group by name;
+
+ASSIGNED_EVENTS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator name="Alice S Johnson">
+    <npo>
+      <npo_name>Habitat_for_Humanity</npo_name>
+      <number_of_events>1</number_of_events>
+    </npo>
+  </coordinator>
+  <coordinator name="Jane L Smith">
+    <npo>
+      <npo_name>PAWS</npo_name>
+      <number_of_events>1</number_of_events>
+    </npo>
+  </coordinator>
+  <coordinator name="John M Doe">
+    <npo>
+      <npo_name>SickKids_Foundation</npo_name>
+      <number_of_events>2</number_of_events>
+    </npo>
+    <npo>
+      <npo_name>Canadian_Red_Cross</npo_name>
+      <number_of_events>2</number_of_events>
+    </npo>
+  </coordinator>
+</coordinators>
+
+select xmlroot(xmlelement("coordinators",
+xmlagg(xmlelement("coordinator", xmlattributes(va.eoid.ecoid.pname.get_fullname() as "coordinator_name", va.eoid.ename as "event_name"),
+xmlagg(xmlelement("volunteer", xmlforest(va.vloid.pname.get_fullname() as "volunteer_name", va.vloid.get_volunteer_hours() as "volunteer_hours", va.toid.tname as "task_name")))))),
+  4  version '1.0') as high_hours
+  5  from volunteerassignment va
+  6  where va.vloid.get_volunteer_hours() > 8
+  7  group by va.eoid.ecoid.pname.get_fullname(), va.eoid.ename
+  8  order by va.eoid.ecoid.pname.get_fullname(), va.eoid.ename;
+
+HIGH_HOURS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0"?>
+<coordinators>
+  <coordinator coordinator_name="John M Doe" event_name="Safety Fair">
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <volunteer_hours>34</volunteer_hours>
+      <task_name>Emergency Supply Kits</task_name>
+    </volunteer>
+  </coordinator>
+  <coordinator coordinator_name="John M Doe" event_name="SickKids Fun Day">
+    <volunteer>
+      <volunteer_name>Emma L Wilson</volunteer_name>
+      <volunteer_hours>12.5</volunteer_hours>
+      <task_name>Patient Companion</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <volunteer_hours>16.5</volunteer_hours>
+      <task_name>Storytime Volunteer</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <volunteer_hours>34</volunteer_hours>
+      <task_name>Gift Assembly</task_name>
+    </volunteer>
+  </coordinator>
+  <coordinator coordinator_name="Jane L Smith" event_name="PAWS Adoption Fair">
+    <volunteer>
+      <volunteer_name>Michael M Davis</volunteer_name>
+      <volunteer_hours>34</volunteer_hours>
+      <task_name>Pet Enclosures</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Sophia A Clark</volunteer_name>
+      <volunteer_hours>10.5</volunteer_hours>
+      <task_name>Pet Walker</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>William T Harris</volunteer_name>
+      <volunteer_hours>20</volunteer_hours>
+      <task_name>Event Setup</task_name>
+    </volunteer>
+    <volunteer>
+      <volunteer_name>Olivia B Taylor</volunteer_name>
+      <volunteer_hours>16.5</volunteer_hours>
+      <task_name>Activity Assistance</task_name>
+    </volunteer>
+  </coordinator>
+  <coordinator coordinator_name="Alice S Johnson" event_name="Habitat Build-A-Home">
+    <volunteer>
+      <volunteer_name>William T Harris</volunteer_name>
+      <volunteer_hours>20</volunteer_hours>
+      <task_name>Furniture Moving</task_name>
+    </volunteer>
+  </coordinator>
+</coordinators>
+
